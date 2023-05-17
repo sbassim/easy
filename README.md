@@ -22,7 +22,17 @@ Welcome to Plains New GitHub repo!
     - Create new IAM user
     - Assign User to Group e.g., `admin`
     - Set permissions for the Group e.g., `AdministratorAccess`
-    - Follow [instructions](https://docs.aws.amazon.com/cli/latest/userguide/sso-configure-profile-token.html#sso-configure-profile-token-auto-sso)
+    - Follow [instructions](https://docs.aws.amazon.com/cli/latest/userguide/sso-configure-profile-token.html#sso-configure-profile-token-auto-sso) with `aws configure sso`
     - `SSO start url` and `SSO region` will be provided
     - Define a profile name `admin`
     - Test setup with `aws s3 ls --profile admin`
+
+
+### Create Infrastructure
+
+- Inside the repo `terraform init` to initialize the backend and install providers and plugins
+- Format the repo `terraform fmt` (optional but important)
+- AWS Lambdas are serverless, so only provide the code to execute
+- Zip the code (manually or within `null_resource` from terraform)
+- Ensure that the zip file is less than 50MB; if it's larger, you'll have to upload it to an S3 bucket 
+- Validate configurations with `terraform validate`
