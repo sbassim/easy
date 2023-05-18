@@ -23,8 +23,8 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-      - name: Terraform Plan
-        run: terraform plan
-
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform apply
+
+      - name: Terraform Output
+        run: terraform output

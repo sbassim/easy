@@ -55,7 +55,7 @@ resource "aws_lambda_function" "app_server_testing" {
   source_code_hash = filebase64sha256("function.zip")
 
   tags = {
-    Name = "ExampleAppServerInstance"
+    Name = "var.easy_instance_name"
   }
 
   depends_on = [null_resource.archive]
