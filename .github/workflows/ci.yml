@@ -1,0 +1,17 @@
+name: Docker CI
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code from GitHub
+        uses: actions/checkout@v3
