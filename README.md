@@ -96,7 +96,30 @@ data "aws_iam_policy_document" "iam_for_lambda_policy" {
 
 #### Fixing CIDR ranges
 
-If the VPC has a CIDR block of 10.0.0.0/16, it encompasses all IP addresses from 10.0.0.0 to 10.0.255.255. The subnets must fall within this range. 
+If the VPC has a CIDR block of 10.0.0.0/16, it encompasses all IP addresses from 10.0.0.0 to 10.0.255.255. The subnets must fall within this range. The following would work great.
 
 ```shell
+variable "dev_vpc_cidr" {
+  description = "CIDR block for the development VPC"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "dev_subnets" {
+  description = "CIDR block for the development subnets"
+  type        = string
+  default     = "10.0.1.0/24"
+}
+
+variable "prod_vpc_cidr" {
+  description = "CIDR block for the production VPC"
+  type        = string
+  default     = "10.1.0.0/16"
+}
+
+variable "prod_subnets" {
+  description = "CIDR block for the production subnets"
+  type        = string
+  default     = "10.1.1.0/24"
+}
 ```
