@@ -52,29 +52,45 @@ resource "aws_subnet" "prod_subnet" {
   }
 }
 
-## LAMBDA
+## IAM ROLES
+data "aws_iam_policy_document" "assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
 
-resource "aws_iam_role" "iam_for_lambda" {
-  name = "iam_for_lambda"
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "lambda.amazonaws.com"
-        }
-      }
+data "aws_iam_policy_document" "iam_for_lambda_policy" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "ec2:CreateNetworkInterface",
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:DeleteNetworkInterface"
     ]
-  })
+
+    resources = ["*"]
+  }
+}
+resource "aws_iam_role" "iam_for_lambda" {
+  name               = "iam_for_lambda"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
+}
+
+resource "aws_iam_role_policy" "iam_for_lambda_policy" {
+  name   = "iam_for_lambda_policy"
+  role   = aws_iam_role.iam_for_lambda.id
+  policy = data.aws_iam_policy_document.iam_for_lambda_policy.json
 }
 
 
-## CODE
-### bundle code
-
+# BUNDLE
 resource "null_resource" "archive" {
   triggers = {
     filename = "${timestamp()}"
@@ -87,7 +103,6 @@ resource "null_resource" "archive" {
 
 
 ## SECURITY GROUP
-
 resource "aws_security_group" "lambda_sg_dev" {
   name        = "lambda_sg_dev"
   description = "Security group for development Lambda function"
@@ -123,9 +138,7 @@ resource "aws_security_group" "lambda_sg_prod" {
 }
 
 
-## DEPLOY INFRASTRUCTURE and CODE
-
-## DEVELOPMENT
+## DEPLOY INFRASTRUCTURE and CODE for DEVELOPMENT and PRODUCTION
 
 resource "aws_lambda_function" "app_server_testing_dev" {
   function_name = "lambda_test_function_dev"
@@ -146,8 +159,6 @@ resource "aws_lambda_function" "app_server_testing_dev" {
 
   depends_on = [null_resource.archive]
 }
-
-## PRODUCTION
 
 resource "aws_lambda_function" "app_server_testing_prod" {
   function_name = "lambda_test_function_prod"
