@@ -15,12 +15,12 @@ variable "easy_instance_name" {
 variable "easy_dev" {
   description = "Value of the Name tag DEV"
   type        = string
-  default     = "Dev"
+  default     = "dev"
 }
 
 
-variable "easy_pro" {
-  description = "Value of the Name tag PRO"
+variable "easy_prod" {
+  description = "Value of the Name tag PROD"
   type        = string
-  default     = "Pro"
+  default     = "prod"
 }

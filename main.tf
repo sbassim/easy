@@ -14,27 +14,69 @@ provider "aws" {
 }
 
 
-resource "aws_vpc" "Dev" {
-  cidr_block = "10.0.0.0/16"
+/* 
+creates subnets, a route table, and a NAT Gateway for private subnets for connections
+without a routable IP address for each resource
+*/
 
+## DEVELOPMENT
+resource "aws_vpc" "dev" {
+  cidr_block       = "10.0.0.0/16"
+  instance_tenancy = "default"
   tags = {
     Name = "var.easy_dev"
   }
 }
 
-resource "aws_vpc" "Pro" {
-  cidr_block = "10.1.0.0/16"
-
+resource "aws_subnet" "dev_public_subnet" {
+  vpc_id     = aws_vpc.dev.id
+  cidr_block = "10.1.1.0/24"
   tags = {
-    Name = "var.easy_pro"
+    Name = "dev-public-subnet"
   }
 }
 
+resource "aws_subnet" "dev_private_subnet" {
+  vpc_id     = aws_vpc.dev.id
+  cidr_block = "10.1.2.0/24"
+  tags = {
+    Name = "dev-private-subnet"
+  }
+}
 
-/* 
-creates subnets, a route table, and a NAT Gateway for private subnets for connections
-without a routable IP address for each resource
-*/
+## PRODUCTION
+resource "aws_vpc" "prod" {
+  cidr_block       = "10.1.0.0/16"
+  instance_tenancy = "default"
+  tags = {
+    Name = "var.easy_prod"
+  }
+}
+
+resource "aws_subnet" "prod_public_subnet" {
+  vpc_id     = aws_vpc.prod.id
+  cidr_block = "10.0.1.0/24"
+  tags = {
+    Name = "prod-public-subnet"
+  }
+}
+
+resource "aws_subnet" "prod_private_subnet" {
+  vpc_id     = aws_vpc.prod.id
+  cidr_block = "10.0.2.0/24"
+  tags = {
+    Name = "prod-private-subnet"
+  }
+}
+
+## PRODUCTION
+### GATEWAY
+
+resource "aws_internet_gateway" "gw" {
+  vpc_id = aws_vpc.prod.id
+}
+
+
 
 resource "aws_iam_role" "iam_for_lambda" {
   name = "iam_for_lambda"
