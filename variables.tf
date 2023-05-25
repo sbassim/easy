@@ -11,6 +11,18 @@ variable "easy_instance_name" {
   default     = "LambdaServerlessInstance"
 }
 
+variable "easy_dev_vpc" {
+  description = "Value of the Name tag for the Lambda Function for DEV"
+  type        = string
+  default     = "DevelopmentServer"
+}
+
+
+variable "easy_prod_vpc" {
+  description = "Value of the Name tag for the Lambda Function for PROD"
+  type        = string
+  default     = "ProductionServer"
+}
 
 variable "easy_dev" {
   description = "Value of the Name tag DEV"
@@ -27,42 +39,26 @@ variable "easy_prod" {
 
 
 variable "dev_vpc_cidr" {
-  description = "Value of "
+  description = "CIDR block for the development VPC"
   type        = string
   default     = "10.0.0.0/16"
-
 }
 
-variable "dev_public_subnets" {
-  description = "Value of "
+variable "dev_subnets" {
+  description = "CIDR block for the development subnets"
   type        = string
-  default     = "10.1.1.0/24"
-
-}
-
-variable "dev_private_subnets" {
-  description = "Value of "
-  type        = string
-  default     = "10.1.2.0/24"
-
+  default     = "10.0.1.0/24"
 }
 
 variable "prod_vpc_cidr" {
-  description = "Value of "
+  description = "CIDR block for the production VPC"
   type        = string
   default     = "10.1.0.0/16"
-
 }
 
-variable "prod_public_subnets" {
-  description = "Value of "
+variable "prod_subnets" {
+  description = "CIDR block for the production subnets"
   type        = string
-  default     = "10.0.1.0/24"
-
+  default     = "10.1.1.0/24"
 }
 
-variable "prod_private_subnets" {
-  description = "Value of "
-  type        = string
-  default     = "10.0.2.0/24"
-}
