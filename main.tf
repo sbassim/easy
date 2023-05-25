@@ -77,6 +77,34 @@ resource "aws_internet_gateway" "gw" {
 }
 
 
+## PRODUCTION
+### ROUTE TABLE
+
+resource "aws_route_table" "prod_public_route_table" {
+  vpc_id = aws_vpc.prod.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.gw.id
+  }
+
+  tags = {
+    Name = "prod-public-route-table"
+  }
+}
+
+resource "aws_route_table" "prod_private_route_table" {
+  vpc_id = aws_vpc.prod.id
+
+  tags = {
+    Name = "prod-private-route-table"
+  }
+}
+
+
+
+
+## LAMBDA
 
 resource "aws_iam_role" "iam_for_lambda" {
   name = "iam_for_lambda"
@@ -99,6 +127,9 @@ EOF
 }
 
 
+## CODE
+### bundle code
+
 resource "null_resource" "archive" {
   triggers = {
     filename = "${timestamp()}"
@@ -109,6 +140,8 @@ resource "null_resource" "archive" {
   }
 }
 
+
+## DEPLOY INFRASTRUCTURE and CODE
 resource "aws_lambda_function" "app_server_testing" {
   function_name = "lambda_test_function"
   role          = aws_iam_role.iam_for_lambda.arn
