@@ -21,7 +21,7 @@ without a routable IP address for each resource
 
 ## DEVELOPMENT
 resource "aws_vpc" "dev" {
-  cidr_block       = "10.0.0.0/16"
+  cidr_block       = var.dev_vpc_cidr
   instance_tenancy = "default"
   tags = {
     Name = "var.easy_dev"
@@ -30,7 +30,7 @@ resource "aws_vpc" "dev" {
 
 resource "aws_subnet" "dev_public_subnet" {
   vpc_id     = aws_vpc.dev.id
-  cidr_block = "10.1.1.0/24"
+  cidr_block = var.dev_public_subnets
   tags = {
     Name = "dev-public-subnet"
   }
@@ -38,7 +38,7 @@ resource "aws_subnet" "dev_public_subnet" {
 
 resource "aws_subnet" "dev_private_subnet" {
   vpc_id     = aws_vpc.dev.id
-  cidr_block = "10.1.2.0/24"
+  cidr_block = var.dev_private_subnets
   tags = {
     Name = "dev-private-subnet"
   }
@@ -46,7 +46,7 @@ resource "aws_subnet" "dev_private_subnet" {
 
 ## PRODUCTION
 resource "aws_vpc" "prod" {
-  cidr_block       = "10.1.0.0/16"
+  cidr_block       = var.prod_vpc_cidr
   instance_tenancy = "default"
   tags = {
     Name = "var.easy_prod"
@@ -55,7 +55,7 @@ resource "aws_vpc" "prod" {
 
 resource "aws_subnet" "prod_public_subnet" {
   vpc_id     = aws_vpc.prod.id
-  cidr_block = "10.0.1.0/24"
+  cidr_block = var.prod_public_subnets
   tags = {
     Name = "prod-public-subnet"
   }
@@ -63,7 +63,7 @@ resource "aws_subnet" "prod_public_subnet" {
 
 resource "aws_subnet" "prod_private_subnet" {
   vpc_id     = aws_vpc.prod.id
-  cidr_block = "10.0.2.0/24"
+  cidr_block = var.prod_private_subnet
   tags = {
     Name = "prod-private-subnet"
   }
@@ -102,6 +102,30 @@ resource "aws_route_table" "prod_private_route_table" {
 }
 
 
+### ASSOCIATIONS
+# Route table Association with public or private Subnet
+resource "aws_route_table_association" "prod_public_rt_assoc" {
+  subnet_id      = aws_subnet.prod_public_subnet.id
+  route_table_id = aws_route_table.prod_public_route_table.id
+}
+
+resource "aws_route_table_association" "prod_private_rt_assoc" {
+  subnet_id      = aws_subnet.prod_private_subnet.id
+  route_table_id = aws_route_table.prod_private_route_table.id
+}
+
+
+
+### NAT
+
+resource "aws_nat_gateway" "nat" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.prod_public_subnet.id
+}
+
+resource "aws_eip" "nat" {
+  vpc = true
+}
 
 
 ## LAMBDA

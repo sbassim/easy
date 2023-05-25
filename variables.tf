@@ -24,3 +24,45 @@ variable "easy_prod" {
   type        = string
   default     = "prod"
 }
+
+
+variable "dev_vpc_cidr" {
+  description = "Value of "
+  type        = string
+  default     = "10.0.0.0/16"
+
+}
+
+variable "dev_public_subnets" {
+  description = "Value of "
+  type        = string
+  default     = "10.1.1.0/24"
+
+}
+
+variable "dev_private_subnets" {
+  description = "Value of "
+  type        = string
+  default     = "10.1.2.0/24"
+
+}
+
+variable "prod_vpc_cidr" {
+  description = "Value of "
+  type        = string
+  default     = "10.1.0.0/16"
+
+}
+
+variable "prod_public_subnets" {
+  description = "Value of "
+  type        = string
+  default     = "10.0.1.0/24"
+
+}
+
+variable "prod_private_subnets" {
+  description = "Value of "
+  type        = string
+  default     = "10.0.2.0/24"
+}
