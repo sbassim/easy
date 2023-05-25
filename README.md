@@ -36,6 +36,7 @@ Welcome to Plains New GitHub repo!
 - Zip the code (manually or within `null_resource` from terraform)
 - Ensure that the zip file is less than 50MB; if it's larger, you'll have to upload it to an S3 bucket 
 - Validate configurations with `terraform validate`
+- Apply and create infrastructure `terraform apply`
 - Inspect the state of the infrastructure `terraform show`
 
 

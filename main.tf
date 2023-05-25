@@ -14,6 +14,28 @@ provider "aws" {
 }
 
 
+resource "aws_vpc" "Dev" {
+  cidr_block = "10.0.0.0/16"
+
+  tags = {
+    Name = "var.easy_dev"
+  }
+}
+
+resource "aws_vpc" "Pro" {
+  cidr_block = "10.1.0.0/16"
+
+  tags = {
+    Name = "var.easy_pro"
+  }
+}
+
+
+/* 
+creates subnets, a route table, and a NAT Gateway for private subnets for connections
+without a routable IP address for each resource
+*/
+
 resource "aws_iam_role" "iam_for_lambda" {
   name = "iam_for_lambda"
 
