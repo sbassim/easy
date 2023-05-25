@@ -63,7 +63,7 @@ resource "aws_subnet" "prod_public_subnet" {
 
 resource "aws_subnet" "prod_private_subnet" {
   vpc_id     = aws_vpc.prod.id
-  cidr_block = var.prod_private_subnet
+  cidr_block = var.prod_private_subnets
   tags = {
     Name = "prod-private-subnet"
   }
@@ -79,6 +79,8 @@ resource "aws_internet_gateway" "gw" {
 
 ## PRODUCTION
 ### ROUTE TABLE
+# Creating RT for Public Subnet
+# Traffic from Public Subnet reaches Internet via Internet Gateway
 
 resource "aws_route_table" "prod_public_route_table" {
   vpc_id = aws_vpc.prod.id
@@ -93,8 +95,15 @@ resource "aws_route_table" "prod_public_route_table" {
   }
 }
 
+# Creating RT for Private Subnet
+# Traffic from Private Subnet reaches Internet via NAT Gateway
 resource "aws_route_table" "prod_private_route_table" {
   vpc_id = aws_vpc.prod.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat.id
+  }
 
   tags = {
     Name = "prod-private-route-table"
@@ -133,21 +142,18 @@ resource "aws_eip" "nat" {
 resource "aws_iam_role" "iam_for_lambda" {
   name = "iam_for_lambda"
 
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      }
+    ]
+  })
 }
 
 
