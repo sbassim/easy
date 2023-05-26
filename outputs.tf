@@ -1,4 +1,4 @@
 output "instance_id" {
   description = "ID of the lambda function"
-  value       = aws_iam_role.iam_for_lambda.id
+  value       = try(data.aws_iam_role.existing.id, aws_iam_role.new[0].id)
 }
