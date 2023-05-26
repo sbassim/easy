@@ -1,0 +1,12 @@
+name: Approve Deployment
+
+on:
+  repository_dispatch:
+    types: [approve]
+
+jobs:
+  approve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger deployment
+        run: echo "Deployment approved"
