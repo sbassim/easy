@@ -147,20 +147,14 @@ resource "aws_security_group" "lambda_sg_prod" {
 
 
 ## DEPLOY INFRASTRUCTURE and CODE for DEVELOPMENT and PRODUCTION
-data "aws_vpc" "existing_dev" {
-  id = "vpc-0540c24020c43066b"
-}
 
-data "aws_subnet" "existing_subnet_dev" {
-  id = "subnet-0c66fe183f4cdc7f6"
-}
 resource "aws_lambda_function" "app_server_testing_dev" {
   function_name = "lambda_test_function_dev"
   role          = try(data.aws_iam_role.existing.arn, aws_iam_role.new[0].arn)
   handler       = "lambda_function.lambda_handler"
   runtime       = "python3.10"
   vpc_config {
-    subnet_ids         = [data.aws_subnet.existing_subnet_dev.id]
+    subnet_ids         = [aws_subnet.dev_subnet.id]
     security_group_ids = [aws_security_group.lambda_sg_dev.id]
   }
 
@@ -174,22 +168,22 @@ resource "aws_lambda_function" "app_server_testing_dev" {
   depends_on = [null_resource.archive]
 }
 
-# resource "aws_lambda_function" "app_server_testing_prod" {
-#   function_name = "lambda_test_function_prod"
-#   role          = try(data.aws_iam_role.existing.arn, aws_iam_role.new[0].arn)
-#   handler       = "lambda_function.lambda_handler"
-#   runtime       = "python3.10"
-#   vpc_config {
-#     subnet_ids         = [aws_subnet.prod_subnet.id]
-#     security_group_ids = [aws_security_group.lambda_sg_prod.id]
-#   }
+resource "aws_lambda_function" "app_server_testing_prod" {
+  function_name = "lambda_test_function_prod"
+  role          = try(data.aws_iam_role.existing.arn, aws_iam_role.new[0].arn)
+  handler       = "lambda_function.lambda_handler"
+  runtime       = "python3.10"
+  vpc_config {
+    subnet_ids         = [aws_subnet.prod_subnet.id]
+    security_group_ids = [aws_security_group.lambda_sg_prod.id]
+  }
 
-#   filename         = "function.zip"
-#   source_code_hash = filebase64sha256("function.zip")
+  filename         = "function.zip"
+  source_code_hash = filebase64sha256("function.zip")
 
-#   tags = {
-#     Name = var.easy_prod_vpc
-#   }
+  tags = {
+    Name = var.easy_prod_vpc
+  }
 
-#   depends_on = [null_resource.archive]
-# }
+  depends_on = [null_resource.archive]
+}
