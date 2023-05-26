@@ -78,14 +78,19 @@ data "aws_iam_policy_document" "iam_for_lambda_policy" {
     resources = ["*"]
   }
 }
-resource "aws_iam_role" "iam_for_lambda" {
+data "aws_iam_role" "existing" {
+  name = "iam_for_lambda"
+}
+
+resource "aws_iam_role" "new" {
+  count              = try(data.aws_iam_role.existing.name, "iam_for_lambda") == "iam_for_lambda" ? 0 : 1
   name               = "iam_for_lambda"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
 resource "aws_iam_role_policy" "iam_for_lambda_policy" {
   name   = "iam_for_lambda_policy"
-  role   = aws_iam_role.iam_for_lambda.id
+  role   = try(data.aws_iam_role.existing.id, aws_iam_role.new[0].id)
   policy = data.aws_iam_policy_document.iam_for_lambda_policy.json
 }
 
